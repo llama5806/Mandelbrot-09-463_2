@@ -8,12 +8,15 @@ import ru.gr0946x.ui.painting.FractalPainter;
 import ru.gr0946x.ui.painting.Painter;
 
 import javax.swing.*;
+import javax.swing.event.ListDataListener;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import static java.lang.Math.*;
 
 public class AnimationWindow extends JFrame {
+
+    private static final int MAX_KEY_FRAMES = 50;
 
     private final SelectablePanel mainPanel;
     private final Painter painter;
@@ -25,6 +28,9 @@ public class AnimationWindow extends JFrame {
     private final JButton btnAddFrame;
     private final JButton btnRemoveFrame;
     private final JButton btnCreateFrame;
+
+    private final JSlider durationSlider;
+    private final JLabel durationLabel;
 
     public AnimationWindow() {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -59,13 +65,19 @@ public class AnimationWindow extends JFrame {
 
         btnAddFrame = new JButton("+");
         btnAddFrame.addActionListener(e -> {
+            if (listModel.getSize() == MAX_KEY_FRAMES) {
+                JOptionPane.showMessageDialog(this, "Достигнут лимит количества кадров (" + MAX_KEY_FRAMES + ").");
+                return;
+            }
+
             ImageIcon image = createImage();
             KeyFrame frame = new KeyFrame(
                     conv.getXMin(), conv.getXMax(),
                     conv.getYMin(), conv.getYMax(),
                     image
             );
-            listModel.addElement(frame);
+            if (!listModel.contains(frame))
+                listModel.addElement(frame);
         });
 
         btnRemoveFrame = new JButton("-");
@@ -77,6 +89,34 @@ public class AnimationWindow extends JFrame {
         });
 
         btnCreateFrame = new JButton("Создать видео");
+        btnCreateFrame.setEnabled(false);
+        listModel.addListDataListener(new ListDataListener() {
+            private void updateButton() {
+                btnCreateFrame.setEnabled(listModel.getSize() > 1);
+            }
+
+            public void intervalAdded(javax.swing.event.ListDataEvent e) {
+                updateButton();
+            }
+
+            public void intervalRemoved(javax.swing.event.ListDataEvent e) {
+                updateButton();
+            }
+
+            public void contentsChanged(javax.swing.event.ListDataEvent e) {
+                updateButton();
+            }
+        });
+
+        durationSlider = new JSlider(5, 30, 10);
+        durationSlider.setMajorTickSpacing(5);
+        durationSlider.setPaintTicks(true);
+        durationSlider.setPaintLabels(true);
+        durationLabel = new JLabel("Длительность: 10 сек");
+
+        durationSlider.addChangeListener(e -> {
+            durationLabel.setText("Длительность: " + durationSlider.getValue() + " сек");
+        });
 
         setContent();
     }
@@ -106,6 +146,10 @@ public class AnimationWindow extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane(framesList);
 
+        JPanel plusMinusPanel = new JPanel(new GridLayout(1, 2, 4, 4));
+        plusMinusPanel.add(btnAddFrame);
+        plusMinusPanel.add(btnRemoveFrame);
+
         gl.setVerticalGroup(gl.createSequentialGroup()
                 .addGap(8)
                 .addGroup(gl.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -113,9 +157,12 @@ public class AnimationWindow extends JFrame {
                         .addGroup(gl.createSequentialGroup()
                                 .addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(8)
-                                .addComponent(btnAddFrame)
+                                .addComponent(plusMinusPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                 .addGap(8)
-                                .addComponent(btnRemoveFrame)
+                                .addComponent(btnCreateFrame)
+                                .addGap(16)
+                                .addComponent(durationLabel)
+                                .addComponent(durationSlider, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         )
                 )
                 .addGap(8)
@@ -127,8 +174,10 @@ public class AnimationWindow extends JFrame {
                 .addGap(8)
                 .addGroup(gl.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addComponent(scrollPane, 200, 200, 200)
-                        .addComponent(btnAddFrame, 200, 200, 200)
-                        .addComponent(btnRemoveFrame, 200, 200, 200)
+                        .addComponent(plusMinusPanel, 200, 200, 200)
+                        .addComponent(btnCreateFrame, 200, 200, 200)
+                        .addComponent(durationLabel, 200, 200, 200)
+                        .addComponent(durationSlider, 200, 200, 200)
                 )
                 .addGap(8)
         );

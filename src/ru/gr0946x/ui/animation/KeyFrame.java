@@ -1,6 +1,7 @@
 package ru.gr0946x.ui.animation;
 
 import javax.swing.*;
+import java.util.Objects;
 
 public class KeyFrame {
     private final double xMin;
@@ -35,5 +36,21 @@ public class KeyFrame {
 
     public ImageIcon getImage() {
         return image;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        KeyFrame keyFrame = (KeyFrame) o;
+        return Double.compare(keyFrame.xMin, xMin) == 0 &&
+                Double.compare(keyFrame.xMax, xMax) == 0 &&
+                Double.compare(keyFrame.yMin, yMin) == 0 &&
+                Double.compare(keyFrame.yMax, yMax) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(xMin, xMax, yMin, yMax);
     }
 }
