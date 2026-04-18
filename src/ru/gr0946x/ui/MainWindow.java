@@ -17,21 +17,25 @@ public class MainWindow extends JFrame {
     private final Painter painter;
     private final Fractal mandelbrot;
     private final Converter conv;
-    public MainWindow(){
+
+    public MainWindow() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(800, 650));
+
+        setJMenuBar(new MenuBar());
+
         mandelbrot = new Mandelbrot();
         conv = new Converter(-2.0, 1.0, -1.0, 1.0);
-        painter = new FractalPainter(mandelbrot, conv, (value)->{
+        painter = new FractalPainter(mandelbrot, conv, (value) -> {
             if (value == 1.0) return Color.BLACK;
-            var r = (float)abs(sin(5 * value));
-            var g = (float)abs(cos(8 * value) * sin (3 * value));
-            var b = (float)abs((sin(7 * value) + cos(15 * value)) / 2f);
+            var r = (float) abs(sin(5 * value));
+            var g = (float) abs(cos(8 * value) * sin(3 * value));
+            var b = (float) abs((sin(7 * value) + cos(15 * value)) / 2f);
             return new Color(r, g, b);
         });
         mainPanel = new SelectablePanel(painter);
         mainPanel.setBackground(Color.WHITE);
-        mainPanel.addSelectListener((r)->{
+        mainPanel.addSelectListener((r) -> {
             var xMin = conv.xScr2Crt(r.x);
             var xMax = conv.xScr2Crt(r.x + r.width);
             var yMin = conv.yScr2Crt(r.y + r.height);
@@ -43,7 +47,7 @@ public class MainWindow extends JFrame {
         setContent();
     }
 
-    private void setContent(){
+    private void setContent() {
         var gl = new GroupLayout(getContentPane());
         setLayout(gl);
         gl.setVerticalGroup(gl.createSequentialGroup()
