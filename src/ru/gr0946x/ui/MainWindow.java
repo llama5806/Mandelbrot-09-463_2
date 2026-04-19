@@ -65,7 +65,7 @@ public class MainWindow extends JFrame {
             double yMin = conv.yScr2Crt(mainPanel.getHeight());
             double yMax = conv.yScr2Crt(0);
 
-            // Координаты мыши (для масштабирования относительно курсора)
+            // Координаты мыши
             double mouseX = conv.xScr2Crt(e.getX());
             double mouseY = conv.yScr2Crt(e.getY());
 
@@ -73,11 +73,11 @@ public class MainWindow extends JFrame {
             double newWidth = (xMax - xMin) * factor;
             double newHeight = (yMax - yMin) * factor;
 
-            // Вычисляем, где находится мышь относительно границ (пропорция)
+            // Вычисляем, где находится мышь относительно границ
             double tX = (mouseX - xMin) / (xMax - xMin);
             double tY = (mouseY - yMin) / (yMax - yMin);
 
-            // Масштабируем относительно позиции мыши (более удобно)
+            // Масштабируем относительно позиции мыши
             double newXMin = mouseX - newWidth * tX;
             double newXMax = mouseX + newWidth * (1 - tX);
             double newYMin = mouseY - newHeight * tY;
