@@ -1,22 +1,28 @@
 package ru.gr0946x.ui;
 
 import ru.gr0946x.ui.animation.AnimationWindow;
-
 import javax.swing.*;
 
+import static ru.gr0946x.ui.saveAndOpen.SaveAndOpenActions.openAction;
+import static ru.gr0946x.ui.saveAndOpen.SaveAndOpenActions.saveAction;
+
+
 public class MenuBar extends JMenuBar {
-    public MenuBar() {
+
+    private MainWindow mainWindow;
+
+    public MenuBar(MainWindow mainWindow) {
+        this.mainWindow = mainWindow;
+
         var saveMenu = new JMenu("Сохранить");
-        var saveItem = new JMenuItem("...");
-        saveItem.addActionListener(e -> {
-        });
+        var saveItem = new JMenuItem("Сохранить как...");
+        saveItem.addActionListener(e -> saveAction(mainWindow));
         saveMenu.add(saveItem);
         add(saveMenu);
 
         var openMenu = new JMenu("Открыть");
-        var openItem = new JMenuItem("...");
-        openItem.addActionListener(e -> {
-        });
+        var openItem = new JMenuItem("Открыть .frac...");
+        openItem.addActionListener(e -> openAction(mainWindow));
         openMenu.add(openItem);
         add(openMenu);
 
@@ -28,6 +34,7 @@ public class MenuBar extends JMenuBar {
         });
         videoMenu.add(videoItem);
         add(videoMenu);
-
     }
+
+
 }
