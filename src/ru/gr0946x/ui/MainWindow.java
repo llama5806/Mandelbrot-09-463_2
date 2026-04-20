@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 
 import static java.lang.Math.*;
+import static ru.gr0946x.ui.FractalState.saveCurrentState;
 
 public class MainWindow extends JFrame {
 
@@ -17,6 +18,7 @@ public class MainWindow extends JFrame {
     private final Painter painter;
     private final Fractal mandelbrot;
     private final Converter conv;
+    private final java.util.ArrayDeque<FractalState> history = new java.util.ArrayDeque<>();
 
     public Painter getPainter() {
         return painter;
@@ -52,6 +54,7 @@ public class MainWindow extends JFrame {
         new RightClickDrag(mainPanel, conv);
 
         mainPanel.addSelectListener((r) -> {
+            FractalState.saveCurrentState(conv, history);
             var xMin = conv.xScr2Crt(r.x);
             var xMax = conv.xScr2Crt(r.x + r.width);
             var yMin = conv.yScr2Crt(r.y + r.height);
@@ -62,6 +65,7 @@ public class MainWindow extends JFrame {
         });
 
         mainPanel.addMouseWheelListener(e -> {
+            FractalState.saveCurrentState(conv, history);
             int rotation = e.getWheelRotation();
 
             double factor;
@@ -97,6 +101,15 @@ public class MainWindow extends JFrame {
         });
 
         setContent();
+        mainPanel.setFocusable(true);
+        mainPanel.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                if (e.isControlDown() && e.getKeyCode() == java.awt.event.KeyEvent.VK_Z) {
+                    FractalState.undo(conv, history, mainPanel);
+                }
+            }
+        });
     }
 
     private void setContent() {
