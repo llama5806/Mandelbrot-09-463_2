@@ -1,6 +1,7 @@
 package ru.gr0946x.ui.animation;
 
 import ru.gr0946x.Converter;
+import ru.gr0946x.ui.FractalState;
 import ru.gr0946x.ui.RightClickDrag;
 import ru.gr0946x.ui.SelectablePanel;
 import ru.gr0946x.ui.fractals.Fractal;
@@ -22,6 +23,7 @@ public class AnimationWindow extends JFrame {
     public final Painter painter;
     private final Fractal mandelbrot;
     private final Converter conv;
+    private final java.util.ArrayDeque<FractalState> history = new java.util.ArrayDeque<>();
 
     private final DefaultListModel<KeyFrame> listModel;
     private final JList<KeyFrame> framesList;
@@ -51,15 +53,6 @@ public class AnimationWindow extends JFrame {
 
         new RightClickDrag(mainPanel, conv);
 
-        mainPanel.addSelectListener((r) -> {
-            var xMin = conv.xScr2Crt(r.x);
-            var xMax = conv.xScr2Crt(r.x + r.width);
-            var yMin = conv.yScr2Crt(r.y + r.height);
-            var yMax = conv.yScr2Crt(r.y);
-            conv.setXShape(xMin, xMax);
-            conv.setYShape(yMin, yMax);
-            mainPanel.repaint();
-        });
 
         listModel = new DefaultListModel<>();
         framesList = new JList<>(listModel);
@@ -79,8 +72,9 @@ public class AnimationWindow extends JFrame {
                     conv.getYMin(), conv.getYMax(),
                     image
             );
-            if (!listModel.contains(frame))
+            if (!listModel.contains(frame)) {
                 listModel.addElement(frame);
+            }
         });
 
         btnRemoveFrame = new JButton("-");
@@ -132,7 +126,19 @@ public class AnimationWindow extends JFrame {
             );
         });
 
+        mainPanel.addSelectListener((r) -> {
+            FractalState.saveCurrentState(conv, history);
+            var xMin = conv.xScr2Crt(r.x);
+            var xMax = conv.xScr2Crt(r.x + r.width);
+            var yMin = conv.yScr2Crt(r.y + r.height);
+            var yMax = conv.yScr2Crt(r.y);
+            conv.setXShape(xMin, xMax);
+            conv.setYShape(yMin, yMax);
+            mainPanel.repaint();
+        });
+
         mainPanel.addMouseWheelListener(e -> {
+            FractalState.saveCurrentState(conv, history);
             int rotation = e.getWheelRotation();
 
             double factor;
@@ -168,6 +174,15 @@ public class AnimationWindow extends JFrame {
         });
 
         setContent();
+        mainPanel.setFocusable(true);
+        mainPanel.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                if (e.isControlDown() && e.getKeyCode() == java.awt.event.KeyEvent.VK_Z) {
+                    FractalState.undo(conv, history, mainPanel);
+                }
+            }
+        });
     }
 
     private ImageIcon createImage() {
