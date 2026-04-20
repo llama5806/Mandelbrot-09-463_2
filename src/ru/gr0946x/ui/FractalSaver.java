@@ -73,7 +73,7 @@ public class FractalSaver {
                     return saveAsImage(selectedFile, painter, conv, "png");
                 default:
                     JOptionPane.showMessageDialog(parent,
-                            "Неподдерживаемый формат файла", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                            "Неподдерживаемый формат", "Ошибка", JOptionPane.ERROR_MESSAGE);
                     return false;
             }
         } catch (Exception e) {
