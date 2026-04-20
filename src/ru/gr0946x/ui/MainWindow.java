@@ -18,11 +18,24 @@ public class MainWindow extends JFrame {
     private final Fractal mandelbrot;
     private final Converter conv;
 
+    public Painter getPainter() {
+        return painter;
+    }
+
+    public Converter getConverter() {
+        return conv;
+    }
+
+    public void updateConverter(Converter newConv) {
+        this.conv.setXShape(newConv.getXMin(), newConv.getXMax());
+        this.conv.setYShape(newConv.getYMin(), newConv.getYMax());
+    }
+
     public MainWindow() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(800, 650));
 
-        setJMenuBar(new MenuBar());
+        setJMenuBar(new MenuBar(this));
 
         mandelbrot = new Mandelbrot();
         conv = new Converter(-2.0, 1.0, -1.0, 1.0);
