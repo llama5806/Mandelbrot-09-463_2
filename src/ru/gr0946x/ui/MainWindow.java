@@ -17,6 +17,7 @@ public class MainWindow extends JFrame {
     private final Painter painter;
     private final Fractal mandelbrot;
     private final Converter conv;
+    private final java.util.ArrayDeque<FractalState> history = new java.util.ArrayDeque<>();
 
     public MainWindow() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -84,6 +85,8 @@ public class MainWindow extends JFrame {
         });
 
         setContent();
+
+
     }
 
     private void setContent() {
@@ -99,5 +102,25 @@ public class MainWindow extends JFrame {
                 .addComponent(mainPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
                 .addGap(8)
         );
+    }
+    private void saveCurrentState() {
+        if (history.size() >= 100) {
+            history.removeFirst();
+        }
+        history.addLast(new FractalState(
+                conv.xScr2Crt(0),
+                conv.xScr2Crt(mainPanel.getWidth()),
+                conv.yScr2Crt(mainPanel.getHeight()),
+                conv.yScr2Crt(0)
+        ));
+    }
+
+    private void undo() {
+        if (!history.isEmpty()) {
+            FractalState lastState = history.removeLast();
+            conv.setXShape(lastState.xMin, lastState.xMax);
+            conv.setYShape(lastState.yMin, lastState.yMax);
+            mainPanel.repaint();
+        }
     }
 }
