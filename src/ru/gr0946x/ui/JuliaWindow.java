@@ -3,7 +3,7 @@ package ru.gr0946x.ui;
 import ru.gr0946x.Converter;
 import ru.gr0946x.ui.fractals.ColorFunction;
 import ru.gr0946x.ui.fractals.Julia;
-import ru.gr0946x.ui.painting.FractalPainter;
+import ru.gr0946x.ui.painting.MultiThreadFractalPainter;
 import ru.gr0946x.ui.painting.Painter;
 
 import javax.swing.*;
@@ -19,29 +19,29 @@ public class JuliaWindow extends JFrame {
 
         Julia julia = new Julia(cRe, cIm);
         Converter conv = new Converter(-2.0, 2.0, -2.0, 2.0);
-        Painter painter = new FractalPainter(julia, conv, colorFunction);
+        Painter painter = new MultiThreadFractalPainter(julia, conv, colorFunction);
 
         PaintPanel panel = new PaintPanel(painter);
         panel.setBackground(Color.BLACK);
 
         panel.addMouseWheelListener(e -> {
-            zoomJulia(conv, panel, e.getX(), e.getY(), e.getWheelRotation());
+            zoomJulia(conv, panel, painter, e.getX(), e.getY(), e.getWheelRotation());
         });
 
-        new RightClickDrag(panel, conv);
+        new RightClickDrag(panel, conv, painter);
 
         add(panel);
         setLocationRelativeTo(null);
         setVisible(true);
     }
 
-    private void zoomJulia(Converter conv, JPanel panel, int mouseX, int mouseY, int rotation) {
+    private void zoomJulia(Converter conv, JPanel panel, Painter painter, int mouseX, int mouseY, int rotation) {
         double factor = (rotation < 0) ? 0.8 : 1.2;
 
-        double xMin = conv.xScr2Crt(0);
-        double xMax = conv.xScr2Crt(panel.getWidth());
-        double yMin = conv.yScr2Crt(panel.getHeight());
-        double yMax = conv.yScr2Crt(0);
+        double xMin = conv.getXMin();
+        double xMax = conv.getXMax();
+        double yMin = conv.getYMin();
+        double yMax = conv.getYMax();
 
         double mouseXcrt = conv.xScr2Crt(mouseX);
         double mouseYcrt = conv.yScr2Crt(mouseY);
@@ -60,6 +60,7 @@ public class JuliaWindow extends JFrame {
         conv.setXShape(newXMin, newXMax);
         conv.setYShape(newYMin, newYMax);
 
+        painter.refresh();
         panel.repaint();
     }
 }

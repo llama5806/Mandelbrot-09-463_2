@@ -6,7 +6,7 @@ import ru.gr0946x.ui.RightClickDrag;
 import ru.gr0946x.ui.SelectablePanel;
 import ru.gr0946x.ui.fractals.Fractal;
 import ru.gr0946x.ui.fractals.Mandelbrot;
-import ru.gr0946x.ui.painting.FractalPainter;
+import ru.gr0946x.ui.painting.MultiThreadFractalPainter;
 import ru.gr0946x.ui.painting.Painter;
 
 import javax.swing.*;
@@ -40,7 +40,7 @@ public class AnimationWindow extends JFrame {
 
         mandelbrot = new Mandelbrot();
         conv = new Converter(-2.0, 1.0, -1.0, 1.0);
-        painter = new FractalPainter(mandelbrot, conv, (value) -> {
+        painter = new MultiThreadFractalPainter(mandelbrot, conv, (value) -> {
             if (value == 1.0) return Color.BLACK;
             var r = (float) abs(sin(5 * value));
             var g = (float) abs(cos(8 * value) * sin(3 * value));
@@ -51,15 +51,17 @@ public class AnimationWindow extends JFrame {
         mainPanel = new SelectablePanel(painter);
         mainPanel.setBackground(Color.WHITE);
 
-        new RightClickDrag(mainPanel, conv);
+        new RightClickDrag(mainPanel, conv, painter);
 
 
         listModel = new DefaultListModel<>();
         framesList = new JList<>(listModel);
+        framesList.setFocusable(false);
         framesList.setCellRenderer(new KeyFrameRenderer());
         framesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         btnAddFrame = new JButton("+");
+        btnAddFrame.setFocusable(false);
         btnAddFrame.addActionListener(e -> {
             if (listModel.getSize() == MAX_KEY_FRAMES) {
                 JOptionPane.showMessageDialog(this, "Достигнут лимит количества кадров (" + MAX_KEY_FRAMES + ").");
@@ -78,6 +80,7 @@ public class AnimationWindow extends JFrame {
         });
 
         btnRemoveFrame = new JButton("-");
+        btnRemoveFrame.setFocusable(false);
         btnRemoveFrame.addActionListener(e -> {
             int selectedIndex = framesList.getSelectedIndex();
             if (selectedIndex != -1) {
@@ -86,6 +89,7 @@ public class AnimationWindow extends JFrame {
         });
 
         durationSlider = new JSlider(5, 15, 10);
+        durationSlider.setFocusable(false);
         durationSlider.setMajorTickSpacing(5);
         durationSlider.setPaintTicks(true);
         durationSlider.setPaintLabels(true);
@@ -96,6 +100,7 @@ public class AnimationWindow extends JFrame {
         });
 
         btnCreateFrame = new JButton("Создать видео");
+        btnCreateFrame.setFocusable(false);
 
         btnCreateFrame.setEnabled(false);
         listModel.addListDataListener(new ListDataListener() {
@@ -134,6 +139,7 @@ public class AnimationWindow extends JFrame {
             var yMax = conv.yScr2Crt(r.y);
             conv.setXShape(xMin, xMax);
             conv.setYShape(yMin, yMax);
+            painter.refresh();
             mainPanel.repaint();
         });
 
@@ -170,6 +176,7 @@ public class AnimationWindow extends JFrame {
             conv.setXShape(newXMin, newXMax);
             conv.setYShape(newYMin, newYMax);
 
+            painter.refresh();
             mainPanel.repaint();
         });
 
@@ -180,6 +187,7 @@ public class AnimationWindow extends JFrame {
             public void keyPressed(java.awt.event.KeyEvent e) {
                 if (e.isControlDown() && e.getKeyCode() == java.awt.event.KeyEvent.VK_Z) {
                     FractalState.undo(conv, history, mainPanel);
+                    painter.refresh();
                 }
             }
         });

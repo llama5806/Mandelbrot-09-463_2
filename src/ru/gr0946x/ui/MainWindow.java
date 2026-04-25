@@ -53,9 +53,12 @@ public class MainWindow extends JFrame {
         mainPanel = new SelectablePanel(painter);
         mainPanel.setBackground(Color.WHITE);
 
-        new RightClickDrag(mainPanel, conv);
+        new RightClickDrag(mainPanel, conv, painter);
 
         mainPanel.addSelectListener((r) -> {
+            if (r.width < 5 || r.height < 5) {
+                return;
+            }
             FractalState.saveCurrentState(conv, history);
             var xMin = conv.xScr2Crt(r.x);
             var xMax = conv.xScr2Crt(r.x + r.width);
@@ -103,11 +106,11 @@ public class MainWindow extends JFrame {
             mainPanel.repaint();
         });
 
-        // Ctrl + правая кнопка для открытия множества Жюлиа
+        // левая кнопка для открытия множества Жюлиа
         mainPanel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                if (javax.swing.SwingUtilities.isRightMouseButton(e) && e.isControlDown()) {
+                if (javax.swing.SwingUtilities.isLeftMouseButton(e)) {
                     double cRe = conv.xScr2Crt(e.getX());
                     double cIm = conv.yScr2Crt(e.getY());
 

@@ -6,16 +6,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import ru.gr0946x.ui.painting.Painter;
 
 public class RightClickDrag {
     private Point lastDragPoint;
     private boolean isDragging = false;
     private final JPanel targetPanel;
     private final Converter converter;
+    private final Painter painter;
 
-    public RightClickDrag(JPanel panel, Converter converter) {
+    public RightClickDrag(JPanel panel, Converter converter, Painter painter) {
         this.targetPanel = panel;
         this.converter = converter;
+        this.painter = painter;
         attachDragListeners();
     }
 
@@ -52,6 +55,8 @@ public class RightClickDrag {
 
                     converter.setXShape(xMin - dxWorld, xMax - dxWorld);
                     converter.setYShape(yMin - dyWorld, yMax - dyWorld);
+
+                    painter.refresh();
 
                     lastDragPoint = e.getPoint();
                     targetPanel.repaint();
