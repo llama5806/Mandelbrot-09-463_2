@@ -6,8 +6,9 @@ import static java.lang.Math.sqrt;
 
 public class Mandelbrot implements Fractal{
 
-    private final int maxIterations = 100;
+    private int maxIterations = 100;  // ← убрали final
     private final double R2 = 4;
+
     public double getR(){
         return sqrt(R2);
     }
@@ -22,5 +23,10 @@ public class Mandelbrot implements Fractal{
             z.plusAssign(c);
         }
         return (float)i / maxIterations;
+    }
+
+
+    public void updateIterations(double zoomLevel) {
+        this.maxIterations = DynamicIterations.getIterations(zoomLevel);
     }
 }

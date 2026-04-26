@@ -57,6 +57,12 @@ public class MultiThreadFractalPainter implements Painter {
     }
 
     @Override
+    public void updateIterations(double zoomLevel) {
+        fractal.updateIterations(zoomLevel);
+        needsRedraw = true;
+    }
+
+    @Override
     public void paint(Graphics g) {
         int w = getWidth();
         int h = getHeight();

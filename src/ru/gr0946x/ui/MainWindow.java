@@ -3,7 +3,7 @@ package ru.gr0946x.ui;
 import ru.gr0946x.Converter;
 import ru.gr0946x.ui.fractals.Fractal;
 import ru.gr0946x.ui.fractals.Mandelbrot;
-import ru.gr0946x.ui.painting.MultiThreadFractalPainter;  // ← Импорт
+import ru.gr0946x.ui.painting.MultiThreadFractalPainter;
 import ru.gr0946x.ui.painting.Painter;
 
 import javax.swing.*;
@@ -67,6 +67,7 @@ public class MainWindow extends JFrame {
             conv.setXShape(xMin, xMax);
             conv.setYShape(yMin, yMax);
             painter.refresh();
+            painter.updateIterations(getCurrentZoom());
             mainPanel.repaint();
         });
 
@@ -103,6 +104,7 @@ public class MainWindow extends JFrame {
             conv.setXShape(newXMin, newXMax);
             conv.setYShape(newYMin, newYMax);
             painter.refresh();
+            painter.updateIterations(getCurrentZoom());
             mainPanel.repaint();
         });
 
@@ -154,4 +156,15 @@ public class MainWindow extends JFrame {
                 .addGap(8)
         );
     }
+    private double getCurrentZoom() {
+        double xRange = conv.getXMax() - conv.getXMin();
+        double yRange = conv.getYMax() - conv.getYMin();
+        double zoom = 1.0 / Math.max(xRange, yRange);
+
+
+        setTitle("Множество Мандельброта - Zoom: " + String.format("%.2f", zoom) + "x");
+
+        return zoom;
+    }
+
 }
