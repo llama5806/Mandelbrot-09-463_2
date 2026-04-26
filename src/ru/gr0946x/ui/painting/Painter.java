@@ -11,4 +11,5 @@ public interface Painter {
 
     void paint(Graphics g);
     default void refresh() {}
+    default void updateIterations(double zoomLevel) {}
 }
