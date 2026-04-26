@@ -140,6 +140,7 @@ public class AnimationWindow extends JFrame {
             conv.setXShape(xMin, xMax);
             conv.setYShape(yMin, yMax);
             painter.refresh();
+            painter.updateIterations(getCurrentZoom());
             mainPanel.repaint();
         });
 
@@ -177,9 +178,11 @@ public class AnimationWindow extends JFrame {
             conv.setYShape(newYMin, newYMax);
 
             painter.refresh();
+            painter.updateIterations(getCurrentZoom());
             mainPanel.repaint();
         });
 
+        painter.updateIterations(getCurrentZoom());
         setContent();
         mainPanel.setFocusable(true);
         mainPanel.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -188,6 +191,7 @@ public class AnimationWindow extends JFrame {
                 if (e.isControlDown() && e.getKeyCode() == java.awt.event.KeyEvent.VK_Z) {
                     FractalState.undo(conv, history, mainPanel);
                     painter.refresh();
+                    painter.updateIterations(getCurrentZoom());
                 }
             }
         });
@@ -238,5 +242,16 @@ public class AnimationWindow extends JFrame {
                 )
                 .addGap(8)
         );
+    }
+
+    private double getCurrentZoom() {
+        double xRange = conv.getXMax() - conv.getXMin();
+        double yRange = conv.getYMax() - conv.getYMin();
+        double zoom = 1.0 / Math.max(xRange, yRange);
+
+
+        setTitle("Множество Мандельброта - Zoom: " + String.format("%.2f", zoom) + "x");
+
+        return zoom;
     }
 }

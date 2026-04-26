@@ -136,6 +136,7 @@ public class MainWindow extends JFrame {
             public void keyPressed(java.awt.event.KeyEvent e) {
                 if (e.isControlDown() && e.getKeyCode() == java.awt.event.KeyEvent.VK_Z) {
                     FractalState.undo(conv, history, mainPanel);
+                    painter.updateIterations(getCurrentZoom());
                     painter.refresh();
                 }
             }
@@ -156,6 +157,7 @@ public class MainWindow extends JFrame {
                 .addGap(8)
         );
     }
+
     private double getCurrentZoom() {
         double xRange = conv.getXMax() - conv.getXMin();
         double yRange = conv.getYMax() - conv.getYMin();
