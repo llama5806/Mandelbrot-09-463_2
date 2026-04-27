@@ -74,6 +74,7 @@ public class MainWindow extends JFrame {
             var yMax = conv.yScr2Crt(r.y);
             conv.setXShape(xMin, xMax);
             conv.setYShape(yMin, yMax);
+            AspectRatioManager.fitToPanel(conv, mainPanel.getWidth(), mainPanel.getHeight());
             painter.refresh();
             painter.updateIterations(getCurrentZoom());
             mainPanel.repaint();
